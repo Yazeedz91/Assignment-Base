@@ -1,45 +1,45 @@
+async function windowActions(){
 
-const cities = [];
+    const endpoint = "https://data.princegeorgescountymd.gov/resource/umjn-t2iz.json"
+    const request = await fetch(endpoint)
+    //  .then(blob => blob.json())
+    //  .then(data => cities.push(...data))  //fetch request
+    const cities = await request.json()
 
-fetch(endpoint)  //fetch request
-    .then(blob => blob.json())
-    .then(data => cities.push(...data))
+    function findMatches(wordToMatch, cities){
+        return cities.filter(place => {
 
-function findMatches(wordToMatch, cities){
-    return cities.filter(place => {
+            const regex = new RegExp(wordToMatch, 'gi'); //looks through string matching lower/uppercase
+            return place.category.match(regex)  //checks if city or state matches
+        });
+    }
 
-        constregex = new RegExp(wordToMatch, 'gi'); //looks through string matching lower/uppercase
-        return place.city.match(regex) || place.state.match(regex)  //checks if city or state matches
-    });
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    //called when someone changes value
+    function displayMatches(event){
+        const matchArray = findMatches(event.target.value, cities);
+        const html = matchArray.map(place => {
+            return `
+                <li class="box gradient">
+                    <p class="rest-name">${place.name.toLowerCase()}</p>
+                    <p class="category">${place.category}</p>
+                    <p class="address">${place.address_line_1}</p>
+                    <p class="name">${place.city}, ${place.state}</p>
+                    <p class="address">${place.zip}</p>
+                </li>
+            `;
+        }).join('');
+        suggestions.innerHTML = html;
+    }
+
+    const searchInput = document.querySelector('.input');
+    const suggestions = document.querySelector('.suggestions');
+
+    searchInput.addEventListener('change', displayMatches);
+    searchInput.addEventListener('keyup', (evt) => {displayMatches(evt)});
 }
-
-function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-//called when someone changes value
-function displayMatches(){
-    const matchArray = findMatches(this.value, cities);
-    const html = matchArray.map(place => {
-        const regex = new RegExp(this.value, 'gi');
-        const cityName = place.city.replace(regex, `<span class="h1">${this.value}
-        </span>`) //finds what matched in regex & replace with span & searched value
-        const stateName = place.state.replace(regex, `<span class="h1">${this.value}
-        </span>`)
-        return `
-            <li>
-                <span class="name">${cityName}, ${stateName}</span>
-                <span class="population">${numberWithCommas(place.population)}</span>
-            </li>
-        `;
-    }).join('');
-    suggestions.innerHTML = html;
-}
-
-const searchInput = document.querySelector('.search');
-const searchInput = document.querySelector('.suggestions');
-
-searchInput.addEventListener('change', displayMatches);
-searchInput.addEventListener('keyup', displayMatches);
 
 window.onload = windowActions;

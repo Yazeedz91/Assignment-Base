@@ -1,10 +1,10 @@
 body {
-    background: lightblue;
+    background: lightpink;
 }
 
 .container {
     width: 960px;
-    background-color: lightblue;
+    background-color: lightpink;
 }
 
 .box {
@@ -25,3 +25,4 @@ body {
     background-color: lightblue;
     margin-top: 10px;
 }
+
